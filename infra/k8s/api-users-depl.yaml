@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-users-depl
+  namespace: dcl-tasks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-users
+  template:
+    metadata:
+      labels:
+        app: api-users
+    spec:
+      containers:
+        - name: api-users
+          image: clschalkwyk/dcl-api-users
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://api-users-mongo-srv:27017/auth'
+            - name: JWT_SECRET
+              value: 'ASADfsdfsdfsdl;l;klksfsdfsdlklkjljl'
+            - name: CRYPT_SECRET
+              value: 'vOVH6asdmpNWjR234234qCcsrhyhynwH'
+            - name: ENCRYPT_IV
+              value: 'fc4342654asdasdf'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-users-srv
+  namespace: dcl-tasks
+spec:
+  selector:
+    app: api-users
+  ports:
+    - name: api-users
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
