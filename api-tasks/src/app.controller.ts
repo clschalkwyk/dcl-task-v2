@@ -66,11 +66,9 @@ export class AppController {
     console.log(`AppController - viewTask : USER : `, req.user);
     console.log(`AppController - viewTask : taskId [${taskId}]`);
 
-
     const task = await this.taskService.getTask(taskId, req.user);
 
     console.log(`AppController - viewTask : found [${JSON.stringify(task)}]`);
-    // console.log(`AppController - patchTask Status : ${JSON.stringify(updatedTask)}`);
     return res.status(HttpStatus.OK).json(task);
   }
 
@@ -78,10 +76,9 @@ export class AppController {
   @Get('/list')
   async listTask(@Req() req, @Res() res): Promise<string> {
     console.log(`AppController - listTask : USER : `, req.user);
+    const updatedTask = await this.taskService.listTasks(req.user, req.query);
 
-    //    const updatedTask = await this.taskService.setTaskStatus(taskId, status, req.user);
-
-    // console.log(`AppController - patchTask Status : ${JSON.stringify(updatedTask)}`);
+    console.log(`AppController - patchTask Status : ${JSON.stringify(updatedTask)}`);
     return res.status(HttpStatus.OK).json({});
   }
 

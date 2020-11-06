@@ -29,10 +29,13 @@ export class TasksService {
       const currentTask: TaskDocument = await this.taskModel.findOne({_id: taskId});
       console.log(`setTaskStatus ->> found task ${JSON.stringify(currentTask)}`);
       if (currentTask && currentTask.owner === user.token) {
-        currentTask.status = newStatus;
+        //limit status available to update
+        if (newStatus === 1 || newStatus === 0) {
+          currentTask.status = newStatus;
 
-        console.log(`setTaskStatus updated current task ${JSON.stringify(currentTask)}`);
-        return Promise.resolve(currentTask.save());
+          console.log(`setTaskStatus updated current task ${JSON.stringify(currentTask)}`);
+          return Promise.resolve(currentTask.save());
+        }
       }
     } catch (e) {
       console.error(`TasksService - setTaskStatus : Error setting status`, e);
@@ -48,12 +51,9 @@ export class TasksService {
 
     try {
       const currentTask: TaskDocument = await this.taskModel.findOne({_id: taskId});
-      console.log(`TasksService - updateTask : before auth check`);
       if (currentTask && currentTask.owner === user.token) {
-        console.log(`TasksService - updateTask : can update`);
         currentTask.status = updateBody.status;
         currentTask.title = updateBody.title;
-        console.log(`TasksService - updateTask : returning`);
         return Promise.resolve(currentTask.save());
       }
     } catch (e) {
@@ -81,7 +81,29 @@ export class TasksService {
     throw new UnauthorizedException();
   }
 
+  async listTasks(user: JwtUserTdo, query: object): Promise<Task[]> {
+    console.log(`TasksService - listTasks : ${user.token}`);
 
+    try {
+      let lookup = {
+        owner: user.token
+      };
+
+      if ('status' in query) {
+        lookup['status'] = query['status'];
+      }
+
+      const found: TaskDocument[] = await this.taskModel.find(lookup);
+      return Promise.resolve(found);
+
+    } catch (e) {
+      console.error(`TasksService - getTask : Error setting status`, e);
+      throw new StatusUpdateException();
+    }
+
+    // if not returned, throw exception
+    throw new UnauthorizedException();
+  }
 
 
 }

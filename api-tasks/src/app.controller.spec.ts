@@ -221,6 +221,24 @@ describe('AppController', () => {
           return res;
         });
 
+      await request(baseUri)
+        .get('/api/tasks/list?status=1')
+        .send()
+        .auth(jwtToken, {type: "bearer"})
+        .then(res => {
+          currentTasks = res.body;
+          return res;
+        });
+
+      await request(baseUri)
+        .get('/api/tasks/list?status=0')
+        .send()
+        .auth(jwtToken, {type: "bearer"})
+        .then(res => {
+          currentTasks = res.body;
+          return res;
+        });
+
       expect(response.status).toBe(HttpStatus.OK);
     });
   });

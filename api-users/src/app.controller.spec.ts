@@ -54,7 +54,6 @@ describe('AppController', () => {
         .get('/api/auth/me')
         .auth(jwtToken, {type: "bearer"})
         .then(res => {
-          console.log(res.body);
           resBody = res.body;
         });
 
